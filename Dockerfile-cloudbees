@@ -1,5 +1,5 @@
 # base
-FROM debian:9-slim AS base
+FROM cloudbees/java-with-docker-client:latest AS base
 
 ENV PYENV_ROOT="/root/.pyenv"
 ENV PATH="$PYENV_ROOT/bin:$PYENV_ROOT/shims:$PATH"

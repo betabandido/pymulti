@@ -1,0 +1,61 @@
+# base
+FROM alpine:latest AS base
+
+ENV PYENV_ROOT="/root/.pyenv"
+ENV PATH="$PYENV_ROOT/bin:$PYENV_ROOT/shims:$PATH"
+
+RUN apk add --no-cache \
+    bash \
+    ca-certificates \
+    dumb-init \
+    expat \
+    gdbm \
+    libc6-compat \
+    libbz2 \
+    libffi \
+    musl \
+    ncurses-terminfo \
+    ncurses-terminfo-base \
+    openssl \
+    readline \
+    sqlite-libs \
+    xz-libs \
+    zlib
+
+# build
+FROM base AS build
+
+COPY fetch-pyenv.sh /
+COPY install.sh /
+
+RUN apk add --no-cache git
+RUN /fetch-pyenv.sh
+
+RUN apk add --no-cache \
+    abuild \
+    binutils \
+    build-base \
+    bzip2-dev \
+    curl \
+    expat-dev \
+    gcc \
+    gdbm-dev \
+    libffi-dev \
+    linux-headers \
+    ncurses-dev \
+    openssl-dev \
+    readline-dev \
+    sqlite-dev \
+    wget \
+    xz-dev \
+    zlib-dev
+
+RUN /install.sh 2.7.15
+RUN /install.sh 3.5.5
+RUN /install.sh 3.6.6
+RUN /install.sh 3.7.0
+
+# release
+FROM base AS release
+
+COPY --from=build /root/.pyenv /root/.pyenv
