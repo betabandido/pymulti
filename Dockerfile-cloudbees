@@ -19,15 +19,10 @@ RUN apt-get update && apt-get install -y \
 # build
 FROM base AS build
 
-COPY fetch-pyenv.sh /
-COPY install.sh /
-
-RUN apt-get update && apt-get install -y git
-RUN /fetch-pyenv.sh
-
-RUN apt-get install -y \
+RUN apt-get update && apt-get install -y \
     build-essential \
     curl \
+    git \
     libbz2-dev \
     libexpat1-dev \
     libffi-dev \
@@ -41,10 +36,13 @@ RUN apt-get install -y \
     wget \
     zlib1g-dev
 
-RUN /install.sh 2.7.15
-RUN /install.sh 3.5.5
-RUN /install.sh 3.6.6
-RUN /install.sh 3.7.0
+COPY fetch-pyenv.sh /
+RUN /fetch-pyenv.sh
+
+ENV PYTHON_VERSIONS="2.7.15 3.5.5 3.6.6 3.7.0"
+
+COPY install.sh /
+RUN /install.sh
 
 # release
 FROM base AS release

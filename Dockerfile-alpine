@@ -25,12 +25,6 @@ RUN apk add --no-cache \
 # build
 FROM base AS build
 
-COPY fetch-pyenv.sh /
-COPY install.sh /
-
-RUN apk add --no-cache git
-RUN /fetch-pyenv.sh
-
 RUN apk add --no-cache \
     abuild \
     binutils \
@@ -40,6 +34,7 @@ RUN apk add --no-cache \
     expat-dev \
     gcc \
     gdbm-dev \
+    git \
     libffi-dev \
     linux-headers \
     ncurses-dev \
@@ -50,10 +45,13 @@ RUN apk add --no-cache \
     xz-dev \
     zlib-dev
 
-RUN /install.sh 2.7.15
-RUN /install.sh 3.5.5
-RUN /install.sh 3.6.6
-RUN /install.sh 3.7.0
+COPY fetch-pyenv.sh /
+RUN /fetch-pyenv.sh
+
+ENV PYTHON_VERSIONS="2.7.15 3.5.5 3.6.6 3.7.0"
+
+COPY install.sh /
+RUN /install.sh
 
 # release
 FROM base AS release
